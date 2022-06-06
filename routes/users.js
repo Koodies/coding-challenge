@@ -3,7 +3,12 @@ const router = express.Router();
 const passport = require("passport");
 const { check, query } = require("express-validator");
 const { validationResult } = require("express-validator");
-const { addUser, updateUser } = require("../src/controller/users");
+const {
+  getUser,
+  addUser,
+  updateUser,
+  deleteUser,
+} = require("../src/controller/users");
 
 const jsonRes = (req, res, next) => {
   const result = validationResult(req);
@@ -25,8 +30,14 @@ router.get(
     check("password").trim().exists().notEmpty().isStrongPassword(),
   ],
   jsonRes,
-  (req, res, next) => {
-    res.send("respond with a resource");
+  async (req, res, next) => {
+    try {
+      const result = await getUser(req.body.email, req.body.password);
+      if(!result) throw new Error('User not found')
+      res.json({ status: "success", ...result });
+    } catch (error) {
+      res.status(400).json({ status: "error", message: error.message });
+    }
   }
 );
 
@@ -75,8 +86,18 @@ router.put(
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
-  (req, res, next) => {
-    res.send("respond with a resource");
+  async (req, res, next) => {
+    try {
+      const result = await deleteUser(
+        req.params.id,
+        req.body.email,
+        req.body.password
+      );
+      if (!result) throw new Error(`Failed to delete user ${req.params.id}`);
+      res.json({ status: "success" });
+    } catch (error) {
+      res.status(400).json({ status: "error", message: error.message });
+    }
   }
 );
 
