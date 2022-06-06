@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { check, query } = require("express-validator");
+const { check } = require("express-validator");
 const { validationResult } = require("express-validator");
 const {
   getUser,
