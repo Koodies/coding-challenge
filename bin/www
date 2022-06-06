@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require("dotenv").config();
 
 /**
  * Module dependencies.
@@ -6,7 +7,8 @@
 
 var app = require('../app');
 var debug = require('debug')('coding-challenge-for-backend-engineers:server');
-var http = require('http');
+var https = require('https');
+const fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +21,10 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer({
+  key: fs.readFileSync(process.env.KEY),
+  cert: fs.readFileSync(process.env.CERT)
+},app);
 
 /**
  * Listen on provided port, on all network interfaces.
