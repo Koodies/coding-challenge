@@ -1,11 +1,10 @@
-require('dotenv').config()
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const passport = require('./src/lib/passport')
-const mongoConnect = require('./src/lib/mongoConnect')
-
+const passport = require("./src/lib/passport");
+const mongoConnect = require("./src/lib/mongoConnect");
 const usersRouter = require("./routes/users");
 
 const app = express();
