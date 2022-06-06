@@ -5,7 +5,8 @@
   - [Current Limitations](#current-limitations)
   - [How to run locally](#how-to-run-locally)
     - [How to create a gmail app password](#how-to-create-a-gmail-app-password)
-  - [Instructions](#instructions)
+  - [Testing the service](#testing-the-service)
+- [Instructions](#instructions)
 
 ## Requirements
 - Node.JS 
@@ -47,9 +48,71 @@ openssl x509 -req -days 366 -in server.csr -signkey server.key -out server.crt
 5. From the Select app drop down choose Other (Custom name) and put a name e.g. nodemailer
 6. A modal dialog will appear with the password. Copy that password and paste it in the .env.
 
+## Testing the service
+
+`{id}` specifies the id of an existing user, `Body` specifiy the parameters needed in the body and `Payload` shows the parameter that is going to be send back as response.
+
+GET `/users/{id}` - Get a existing user information
+
+Body
+|Name|Type|Description|
+| ------------- | ------ | ------------- |
+|email|string|Email address of a existing user|
+|password|string|Password of a existing user|
+
+Payload
+|Name|Type|Description|
+| ------------- | ------ | ------------- |
+|status|string|Success or Error|
+|id|string|The same id specify as {id}|
+|email|string|Email address of {id}|
+|token|string|JWT of a {id}|
+
 ---
 
-## Instructions
+POST `/users` - Create a new user 
+
+Body
+|Name|Type|Description|
+| ------------- | ------ | ------------- |
+|email|string|Email address of a new user|
+|password|string|Password of a new user|
+
+Payload
+|Name|Type|Description|
+| ------------- | ------ | ------------- |
+|status|string|Success or Error|
+|id|string|The new user id|
+|token|string|The new user JWT|
+
+---
+
+PUT `/users/{id}` - Update a existing user password
+- Requires a Bearer Token
+  
+Body
+|Name|Type|Description|
+| ------------- | ------ | ------------- |
+|username|string|Email Address of a existing user|
+
+Payload
+|Name|Type|Description|
+| ------------- | ------ | ------------- |
+|status|string|Success or Error|
+
+---
+
+DELETE `/users/{id}`
+- Requires a Bearer Token
+
+Payload
+|Name|Type|Description|
+| ------------- | ------ | ------------- |
+|status|string|Success or Error|
+
+---
+
+# Instructions
 The purpose of this coding challenge is to set up a Node.JS app that serves a simple CRUD API and can send welcome emails. Familiarity with Node.JS is assumed, however, no prior knowledge of `nodemailer` is required. Besides completing the task according to the set of instructions below, we are looking for well written code and a demonstration of understanding the best practices around Node.JS and Express.JS.
 
 1. Clone this repository and create your own GitHub repository.
