@@ -1,6 +1,7 @@
 const ObjectID = require("mongodb").ObjectId;
 const jwt = require("jsonwebtoken");
 const Users = require("../../src/dao/users");
+const {sendEmail } = require("../lib/nodemailer")
 
 async function getUser(email, password) {
   const result = await Users.getUser({ email, password }, {password: 0});
@@ -12,6 +13,8 @@ async function addUser(email, password) {
     //Check if email is already registered and then throw error email is used
     const token = jwt.sign(email, process.env.PUB_KEY);
     const result = await Users.addUser(email, password, token);
+    const body = `Welcome to this app user ${result.insertedId}`
+    sendEmail(email, body)
     return { id: result.insertedId, token };
   } catch (error) {
     //log error
