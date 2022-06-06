@@ -13,7 +13,7 @@ module.exports = {
       service: "gmail",
       auth: {
         user: process.env.MAILUSER,
-        pass: rocess.env.MAILPASS,
+        pass: process.env.MAILPASS,
       },
     });
     const mailer = transporter.sendMail(mailOptions);
