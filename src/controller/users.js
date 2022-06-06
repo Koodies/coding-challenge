@@ -3,15 +3,20 @@ const jwt = require("jsonwebtoken");
 const Users = require("../../src/dao/users");
 const {sendEmail } = require("../lib/nodemailer")
 
-async function getUser(email, password) {
-  const result = await Users.getUser({ email, password }, {password: 0});
+async function getUser(id, email, password) {
+  const _id = ObjectID(id);
+  const result = await Users.getUser({ _id, email, password }, {password: 0});
   return result
 }
 
 async function addUser(email, password) {
   try {
     //Check if email is already registered and then throw error email is used
-    const token = jwt.sign(email, process.env.PUB_KEY);
+    const data = {
+      email,
+      time: new Date()
+    }
+    const token = jwt.sign(data, process.env.PUB_KEY);
     const result = await Users.addUser(email, password, token);
     const body = `Welcome to this app user ${result.insertedId}`
     sendEmail(email, body)
@@ -22,11 +27,11 @@ async function addUser(email, password) {
   }
 }
 
-async function updateUser(id, token, password) {
+async function updateUser(id, email, password) {
   try {
     const _id = ObjectID(id);
     const result = await Users.updateUser(
-      { _id, token },
+      { _id, email },
       { password },
       { password: 0 }
     );
@@ -37,10 +42,10 @@ async function updateUser(id, token, password) {
   }
 }
 
-async function deleteUser(id, email, password) {
+async function deleteUser(id, email) {
   try {
     const _id = ObjectID(id);
-    const result = await Users.deleteUser({ _id, email, password });
+    const result = await Users.deleteUser({ _id, email });
     return (result.deletedCount === 1)
   } catch (error) {
     //log error

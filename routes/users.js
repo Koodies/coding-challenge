@@ -26,13 +26,14 @@ const jsonRes = (req, res, next) => {
 router.get(
   "/:id",
   [
+    check("id").exists().trim().isAlphanumeric().notEmpty(),
     check("email").trim().exists().isEmail(),
     check("password").trim().exists().notEmpty().isStrongPassword(),
   ],
   jsonRes,
   async (req, res, next) => {
     try {
-      const result = await getUser(req.body.email, req.body.password);
+      const result = await getUser(req.params.id, req.body.email, req.body.password);
       if(!result) throw new Error('User not found')
       res.json({ status: "success", ...result });
     } catch (error) {
@@ -63,15 +64,17 @@ router.put(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   [
+    check("id").exists().trim().isAlphanumeric().notEmpty(),
     check("username").trim().exists().notEmpty(),
     check("password").trim().exists().notEmpty().isStrongPassword(),
   ],
   jsonRes,
   async (req, res, next) => {
     try {
+      if(req.params.id != req.user._id) throw new Error(`Unauthorized User`)
       const result = await updateUser(
         req.params.id,
-        req.user.token,
+        req.user.email,
         req.body.password
       );
       if (result.modifiedCount === 0 || result.matchedCount === 0)
@@ -86,12 +89,16 @@ router.put(
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
+  [
+    check("id").exists().trim().isAlphanumeric().notEmpty(),
+  ],
+  jsonRes,
   async (req, res, next) => {
     try {
+      if(req.params.id != req.user._id) throw new Error(`Unauthorized User`)
       const result = await deleteUser(
         req.params.id,
-        req.body.email,
-        req.body.password
+        req.user.email
       );
       if (!result) throw new Error(`Failed to delete user ${req.params.id}`);
       res.json({ status: "success" });
